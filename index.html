@@ -9,33 +9,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-        
         :root { --bg-main: #f8fafc; font-size: 16px; }
         .dark { --bg-main: #0f172a; }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-main); 
-            transition: background-color 0.3s ease; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-
-        /* FORÇAR ESCALABILIDADE EM TODOS OS TEXTOS */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-main); transition: background-color 0.3s ease; -webkit-tap-highlight-color: transparent; }
         html.font-small { font-size: 12px; }
         html.font-normal { font-size: 16px; }
         html.font-large { font-size: 20px; }
-
         .tab-active { background-color: white !important; color: #0f172a !important; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
         .dark .tab-active { background-color: #334155 !important; color: #60a5fa !important; }
-        
         summary::-webkit-details-marker { display: none; }
         summary { list-style: none; outline: none; }
         details[open] .seta-icon { transform: rotate(180deg); }
         .seta-icon { transition: transform 0.2s ease; }
-        
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
         .toast-animate { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -43,21 +30,25 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row text-slate-900 dark:text-slate-100">
-
     <div id="toast-container"></div>
-
     <aside class="w-full md:w-72 bg-slate-900 text-white md:min-h-screen sticky top-0 z-30 shadow-2xl flex flex-col">
         <div class="p-8">
-            <img src="51316-removebg-preview.png" alt="Logo Sanesi" class="w-32 mb-6 object-contain">
-            
-            <h1 class="text-xl font-black tracking-tighter text-blue-400">ESTOQUE UNIFORMES e EPI's</h1>
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">VALE DO PARAIBA</p>
-            
+            <img src="1775142777390.png" alt="Logo Sanesi" onclick="mudarAba('cadastro')" class="w-32 mb-6 object-contain cursor-pointer hover:opacity-70 transition-all active:scale-95">
+            <div class="flex flex-col gap-1">
+  <h1 class="text-xl font-black tracking-tighter bg-gradient-to-r from-blue-200 to-blue-400 bg-clip-text text-transparent drop-shadow-sm">
+    ESTOQUE UNIFORMES e EPI'S
+  </h1>
+  
+  <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">
+    Vale do Paraíba
+  </p>
+</div>
+
+
             <div class="mt-6 flex flex-col gap-4 border-t border-slate-800 pt-4">
                 <button onclick="toggleDarkMode()" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-400 transition-all outline-none">
                     <span id="dark-icon">🌙</span> <span id="dark-text">Modo Escuro</span>
                 </button>
-
                 <div class="flex flex-col gap-2">
                     <p class="text-[9px] font-black uppercase tracking-widest text-slate-500">Tamanho da Fonte</p>
                     <div class="flex gap-2">
@@ -68,18 +59,16 @@
                 </div>
             </div>
         </div>
-
         <nav class="flex md:flex-col p-3 gap-2 overflow-x-auto no-scrollbar">
             <button onclick="mudarAba('estoque')" id="btn-estoque" class="flex-1 md:flex-none flex items-center gap-3 p-4 rounded-2xl text-xs font-black uppercase text-slate-400 hover:bg-slate-800 transition-all outline-none"><span>📦 PAINEL</span></button>
             <button onclick="mudarAba('entrada')" id="btn-entrada" class="flex-1 md:flex-none flex items-center gap-3 p-4 rounded-2xl text-xs font-black uppercase text-slate-400 hover:bg-slate-800 transition-all outline-none"><span>➕ ENTRADAS</span></button>
             <button onclick="mudarAba('historico')" id="btn-historico" class="flex-1 md:flex-none flex items-center gap-3 p-4 rounded-2xl text-xs font-black uppercase text-slate-400 hover:bg-slate-800 transition-all outline-none"><span>🕒 HISTÓRICO</span></button>
         </nav>
     </aside>
-
     <main class="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
             <div>
-                <h2 id="titulo-pagina" class="text-4xl font-black uppercase tracking-tight">Estoque Atual</h2>
+                <h2 id="titulo-pagina" class="text-4xl font-black uppercase tracking-tight text-slate-400">Estoque Atual</h2>
                 <p class="text-sm text-slate-400 font-bold uppercase tracking-tighter mt-1">Vale do Paraíba </p>
             </div>
             <div class="flex flex-wrap gap-2 w-full md:w-auto">
@@ -87,59 +76,44 @@
                 <button onclick="baixarPDF()" class="flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white font-black py-4 px-6 rounded-2xl shadow-lg text-[10px] uppercase transition-all">📄 PDF</button>
             </div>
         </header>
-
         <div id="container-busca" class="mb-8">
             <div class="relative">
                 <span class="absolute inset-y-0 left-5 flex items-center text-slate-400">🔍</span>
                 <input type="text" id="input-busca" onkeyup="filtrarEstoque()" placeholder="Buscar material..." class="w-full pl-14 pr-6 py-5 bg-white dark:bg-slate-800 border-2 border-transparent rounded-3xl text-sm font-bold uppercase shadow-sm focus:border-blue-500 outline-none dark:text-white">
             </div>
         </div>
-
-        <div id="aba-estoque" class="block">
-            <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start"></div>
-        </div>
-
+        <div id="aba-estoque" class="block"><div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start"></div></div>
         <div id="aba-entrada" class="hidden max-w-xl mx-auto">
             <div class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] shadow-2xl">
                 <h3 class="text-xl font-black mb-8 border-b-4 border-blue-600 pb-2 inline-block uppercase">Reposição</h3>
                 <div class="space-y-6">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Material</label>
-                        <select id="select-item-entrada" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold uppercase outline-none dark:text-white"></select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Quantidade</label>
-                        <input type="number" id="qtd-entrada" placeholder="00" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold outline-none dark:text-white">
-                    </div>
+                    <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Material</label><select id="select-item-entrada" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold uppercase outline-none dark:text-white"></select></div>
+                    <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Quantidade</label><input type="number" id="qtd-entrada" placeholder="00" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold outline-none dark:text-white"></div>
                     <button onclick="salvarEntrada()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 rounded-2xl text-xs uppercase shadow-xl transition-all">Salvar Entrada</button>
                 </div>
             </div>
         </div>
-
-        <div id="aba-historico" class="hidden">
-            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 dark:bg-slate-700 text-slate-400">
-                            <tr>
-                                <th class="p-6 text-[10px] font-black uppercase">Data</th>
-                                <th class="p-6 text-[10px] font-black uppercase">Material / Detalhes</th>
-                                <th class="p-6 text-[10px] font-black uppercase text-center">Saldo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-historico-tabela" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody>
-                    </table>
+        <div id="aba-cadastro" class="hidden max-w-xl mx-auto">
+            <div class="bg-white dark:bg-slate-800 p-8 rounded-[3rem] shadow-2xl">
+                <h3 class="text-xl font-black mb-8 border-b-4 border-emerald-500 pb-2 inline-block uppercase">Novo Cadastro</h3>
+                <div class="space-y-6">
+                    <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Nome do Material</label><input type="text" id="novo-item-nome" placeholder="EX: LUVA DE RASPA" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold uppercase outline-none dark:text-white"></div>
+                    <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Estoque Inicial</label><input type="number" id="novo-item-qtd" placeholder="0" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold outline-none dark:text-white"></div>
+                    <button onclick="cadastrarNovoItem()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-6 rounded-2xl text-xs uppercase shadow-xl transition-all">Confirmar Cadastro</button>
                 </div>
             </div>
         </div>
+        <div id="aba-historico" class="hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
+                <div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-slate-50 dark:bg-slate-700 text-slate-400"><tr><th class="p-6 text-[10px] font-black uppercase">Data</th><th class="p-6 text-[10px] font-black uppercase">Material / Detalhes</th><th class="p-6 text-[10px] font-black uppercase text-center">Saldo</th></tr></thead><tbody id="lista-historico-tabela" class="divide-y divide-slate-100 dark:divide-slate-700"></tbody></table></div>
+            </div>
+        </div>
     </main>
-
     <script>
         const SUPABASE_URL = 'https://ppfnzoxakmvvkuuiggtf.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_KjZ5ay6u32vr_xEISNfreg_P4ZHYM8E';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const SENHA_OPERADOR = "2026";
-        
         let dadosLocaisEstoque = [];
 
         function showToast(msg, type = 'success') {
@@ -151,12 +125,9 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
-        // --- SISTEMA DE FONTES CORRIGIDO ---
         function alterarFonte(tamanho) {
             const html = document.documentElement;
-            // Remove classes anteriores
             html.classList.remove('font-small', 'font-normal', 'font-large');
-            // Adiciona a nova
             html.classList.add(`font-${tamanho}`);
             localStorage.setItem('estoque-font-size', tamanho);
         }
@@ -169,11 +140,14 @@
         }
 
         function mudarAba(aba) {
-            document.getElementById('titulo-pagina').innerText = { 'estoque': 'Estoque Atual', 'entrada': 'Entrada de Material', 'historico': 'Log de Movimentações' }[aba];
+            const titulos = { 'estoque': 'Estoque Atual', 'entrada': 'Reposição', 'historico': 'Log de Movimentações', 'cadastro': 'Área Administrativa' };
+            document.getElementById('titulo-pagina').innerText = titulos[aba] || 'Estoque';
             document.getElementById('container-busca').classList.toggle('hidden', aba !== 'estoque');
-            ['estoque', 'entrada', 'historico'].forEach(a => {
-                document.getElementById(`aba-${a}`).classList.toggle('hidden', a !== aba);
-                document.getElementById(`btn-${a}`).classList.toggle('tab-active', a === aba);
+            ['estoque', 'entrada', 'historico', 'cadastro'].forEach(a => {
+                const el = document.getElementById(`aba-${a}`);
+                const btn = document.getElementById(`btn-${a}`);
+                if(el) el.classList.toggle('hidden', a !== aba);
+                if(btn) btn.classList.toggle('tab-active', a === aba);
             });
             if(aba === 'historico') carregarHistorico(); else carregarEstoque();
         }
@@ -192,44 +166,24 @@
             const container = document.getElementById('dashboard');
             const termoBusca = document.getElementById('input-busca').value.trim();
             container.innerHTML = '';
-            
             const categorias = {};
             itens.forEach(item => {
                 const cat = item.item.split(' ')[0].toUpperCase();
                 if (!categorias[cat]) categorias[cat] = [];
                 categorias[cat].push(item);
             });
-
             for (const [nome, produtos] of Object.entries(categorias)) {
                 const details = document.createElement('details');
-                details.open = termoBusca.length > 0; 
+                details.open = termoBusca.length > 0;
                 details.className = "bg-white dark:bg-slate-800 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-4";
-                
                 let htmlItens = produtos.map(p => `
                     <div class="flex justify-between items-center p-5 border-b border-slate-50 dark:border-slate-700 last:border-0">
-                        <div class="flex-1">
-                            <p class="font-black text-slate-800 dark:text-slate-100 text-[0.8rem] uppercase leading-tight">${p.item}</p>
-                            <span class="inline-block mt-1 px-2 py-0.5 rounded-lg text-[0.65rem] font-black ${p.saldo_atual <= 2 ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-emerald-100 text-emerald-600'}">SALDO: ${p.saldo_atual}</span>
-                        </div>
+                        <div class="flex-1"><p class="font-black text-slate-800 dark:text-slate-100 text-[0.8rem] uppercase leading-tight">${p.item}</p><span class="inline-block mt-1 px-2 py-0.5 rounded-lg text-[0.65rem] font-black ${p.saldo_atual <= 2 ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-emerald-100 text-emerald-600'}">SALDO: ${p.saldo_atual}</span></div>
                         <button onclick="retirar(${p.id}, '${p.item}', ${p.saldo_atual})" class="bg-slate-900 dark:bg-blue-600 text-white font-black py-2.5 px-5 rounded-xl text-[0.65rem] uppercase ml-2">Baixa</button>
-                    </div>
-                `).join('');
-
-                details.innerHTML = `
-                    <summary class="bg-slate-50/50 dark:bg-slate-700/30 p-6 flex justify-between items-center cursor-pointer">
-                        <div class="flex items-center gap-3">
-                            <span class="seta-icon text-slate-400 text-xs">▼</span>
-                            <h3 class="font-black text-[0.75rem] text-slate-500 dark:text-slate-400 uppercase tracking-widest">${nome}</h3>
-                        </div>
-                    </summary>
-                    <div class="divide-y dark:divide-slate-700">${htmlItens}</div>`;
-                
+                    </div>`).join('');
+                details.innerHTML = `<summary class="bg-slate-50/50 dark:bg-slate-700/30 p-6 flex justify-between items-center cursor-pointer"><div class="flex items-center gap-3"><span class="seta-icon text-slate-400 text-xs">▼</span><h3 class="font-black text-[0.75rem] text-slate-500 dark:text-slate-400 uppercase tracking-widest">${nome}</h3></div></summary><div class="divide-y dark:divide-slate-700">${htmlItens}</div>`;
                 container.appendChild(details);
             }
-        }
-
-        async function registrarNoHistorico(obj) {
-            await _supabase.from('historico').insert([obj]);
         }
 
         async function retirar(id, nomeItem, saldo) {
@@ -239,13 +193,11 @@
             if (!nomeTace) return;
             const qtd = Number(prompt(`Quantidade:`, "1"));
             if (!qtd || qtd <= 0 || qtd > saldo) return showToast("❌ Quantidade inválida!", "error");
-
             const novoSaldo = saldo - qtd;
             const { error } = await _supabase.from('estoque').update({ saldo_atual: novoSaldo }).eq('id', id);
             if (!error) {
-                await registrarNoHistorico({ data: new Date().toISOString(), tace: nomeTace.toUpperCase(), item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'SAIDA' });
-                showToast(`✅ Baixa concluída!`);
-                carregarEstoque();
+                await _supabase.from('historico').insert([{ data: new Date().toISOString(), tace: nomeTace.toUpperCase(), item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'SAIDA' }]);
+                showToast(`✅ Baixa concluída!`); carregarEstoque();
             }
         }
 
@@ -253,18 +205,25 @@
             const select = document.getElementById('select-item-entrada');
             if(!select.value) return showToast("❌ Selecione um material", "error");
             const [id, saldoAtual, nomeItem] = select.value.split('|');
-            const qtdInput = document.getElementById('qtd-entrada');
-            const qtd = Number(qtdInput.value);
+            const qtd = Number(document.getElementById('qtd-entrada').value);
             if(!qtd || qtd <= 0) return showToast("❌ Digite a quantidade", "error");
             if (prompt("Senha:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
-
             const novoSaldo = Number(saldoAtual) + qtd;
             const { error } = await _supabase.from('estoque').update({ saldo_atual: novoSaldo }).eq('id', id);
             if (!error) {
-                await registrarNoHistorico({ data: new Date().toISOString(), tace: 'REPOSICAO', item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'ENTRADA' });
-                showToast(`✅ Estoque atualizado!`);
-                qtdInput.value = ''; mudarAba('estoque');
+                await _supabase.from('historico').insert([{ data: new Date().toISOString(), tace: 'REPOSICAO', item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'ENTRADA' }]);
+                showToast(`✅ Estoque atualizado!`); document.getElementById('qtd-entrada').value = ''; mudarAba('estoque');
             }
+        }
+
+        async function cadastrarNovoItem() {
+            const nome = document.getElementById('novo-item-nome').value.trim().toUpperCase();
+            const qtd = Number(document.getElementById('novo-item-qtd').value);
+            if (!nome || qtd < 0) return showToast("❌ Preencha os campos!", "error");
+            if (prompt("Senha de Admin:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
+            const { error } = await _supabase.from('estoque').insert([{ item: nome, saldo_atual: qtd }]);
+            if (error) showToast("❌ Erro ao cadastrar", "error");
+            else { showToast(`✅ ${nome} cadastrado!`); document.getElementById('novo-item-nome').value = ''; document.getElementById('novo-item-qtd').value = ''; carregarEstoque(); mudarAba('estoque'); }
         }
 
         function popularSelectEntrada(itens) {
@@ -277,24 +236,20 @@
             if (error) return;
             tabela.innerHTML = data.map(h => {
                 const isEntrada = h.tace === 'REPOSICAO' || h.tipo === 'ENTRADA';
-                const sinal = isEntrada ? '+' : '-';
                 const cor = isEntrada ? 'text-emerald-500' : 'text-red-500';
-                return `<tr class="dark:text-slate-300"><td class="p-6 text-[0.65rem] font-bold text-slate-400">${new Date(h.data).toLocaleString('pt-BR')}</td><td class="p-6"><p class="text-xs font-black uppercase text-slate-800 dark:text-slate-100">${h.item}</p><p class="text-[0.6rem] font-bold ${cor} uppercase">${sinal} ${h.quantidade} UNID | PARA: ${h.tace}</p></td><td class="p-6 text-center font-black text-blue-500 text-sm">${h.saldo_final}</td></tr>`;
+                return `<tr class="dark:text-slate-300"><td class="p-6 text-[0.65rem] font-bold text-slate-400">${new Date(h.data).toLocaleString('pt-BR')}</td><td class="p-6"><p class="text-xs font-black uppercase text-slate-800 dark:text-slate-100">${h.item}</p><p class="text-[0.6rem] font-bold ${cor} uppercase">${isEntrada ? '+' : '-'} ${h.quantidade} UNID | PARA: ${h.tace}</p></td><td class="p-6 text-center font-black text-blue-500 text-sm">${h.saldo_final}</td></tr>`;
             }).join('');
         }
 
         function baixarRelatorio() {
-            const dataHora = new Date().toLocaleString('pt-BR');
             const corpo = dadosLocaisEstoque.map(i => [i.item.toUpperCase(), i.saldo_atual, i.saldo_atual <= 2 ? "REPOSIÇÃO" : "OK"]);
-            const ws = XLSX.utils.aoa_to_sheet([["RELATORIO DO ESTOQUE"],["GERADO EM:", dataHora],[""],["MATERIAL", "SALDO", "STATUS"], ...corpo]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Estoque");
+            const ws = XLSX.utils.aoa_to_sheet([["RELATORIO DO ESTOQUE"],["GERADO EM:", new Date().toLocaleString()],[""],["MATERIAL", "SALDO", "STATUS"], ...corpo]);
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Estoque");
             XLSX.writeFile(wb, `Estoque_VP_${new Date().toISOString().split('T')[0]}.xlsx`);
         } 
 
         function baixarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.text("RELATÓRIO DO ESTOQUE - VALE DO PARAÍBA", 14, 20);
             const corpo = dadosLocaisEstoque.map(i => [i.item.toUpperCase(), i.saldo_atual.toString(), i.saldo_atual <= 2 ? "REPOSIÇÃO" : "OK"]);
             doc.autoTable({ startY: 30, head: [['MATERIAL', 'SALDO', 'STATUS']], body: corpo });
@@ -302,13 +257,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.getElementById('dark-icon').innerText = '☀️';
-                document.getElementById('dark-text').innerText = 'Modo Claro';
-            }
-            const fonteSalva = localStorage.getItem('estoque-font-size') || 'normal';
-            alterarFonte(fonteSalva);
+            if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+            alterarFonte(localStorage.getItem('estoque-font-size') || 'normal');
             carregarEstoque();
         });
     </script>
