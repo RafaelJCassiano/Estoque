@@ -35,15 +35,11 @@
         <div class="p-8">
             <img src="51316-removebg-preview.png" alt="Logo Sanesi" onclick="mudarAba('cadastro')" class="w-56 mb-6 object-contain cursor-pointer hover:opacity-70 transition-all active:scale-95">
             <div class="flex flex-col gap-1">
-  <h1 class="text-xl font-black tracking-tighter bg-gradient-to-r from-blue-200 to-blue-400 bg-clip-text text-transparent drop-shadow-sm">
-    ESTOQUE UNIFORMES e EPI'S
-  </h1>
-  
-  <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">
-    Vale do Paraíba
-  </p>
-</div>
-
+                <h1 class="text-xl font-black tracking-tighter bg-gradient-to-r from-blue-200 to-blue-400 bg-clip-text text-transparent drop-shadow-sm">
+                    ESTOQUE UNIFORMES e EPI'S
+                </h1>
+                <p class="text-[10px] font-bold tracking-[0.3em] text-slate-400 uppercase">Vale do Paraíba</p>
+            </div>
 
             <div class="mt-6 flex flex-col gap-4 border-t border-slate-800 pt-4">
                 <button onclick="toggleDarkMode()" class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-blue-400 transition-all outline-none">
@@ -89,6 +85,7 @@
                 <div class="space-y-6">
                     <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Material</label><select id="select-item-entrada" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold uppercase outline-none dark:text-white"></select></div>
                     <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Quantidade</label><input type="number" id="qtd-entrada" placeholder="00" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold outline-none dark:text-white"></div>
+                    <div><label class="block text-[10px] font-black text-slate-400 mb-2 uppercase">Observação (Origem/Detalhes)</label><input type="text" id="obs-entrada" placeholder="EX: COMPRA NF 123 / TRANSFERÊNCIA" class="w-full p-5 bg-slate-50 dark:bg-slate-700 rounded-2xl text-sm font-bold uppercase outline-none dark:text-white"></div>
                     <button onclick="salvarEntrada()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 rounded-2xl text-xs uppercase shadow-xl transition-all">Salvar Entrada</button>
                 </div>
             </div>
@@ -113,7 +110,8 @@
         const SUPABASE_URL = 'https://ppfnzoxakmvvkuuiggtf.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_KjZ5ay6u32vr_xEISNfreg_P4ZHYM8E';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const SENHA_OPERADOR = "2026";
+        // Senha desativada conforme solicitado
+        const SENHA_OPERADOR = "2026"; 
         let dadosLocaisEstoque = [];
 
         function showToast(msg, type = 'success') {
@@ -188,7 +186,8 @@
 
         async function retirar(id, nomeItem, saldo) {
             if (saldo <= 0) return showToast("⚠️ ESTOQUE ZERADO!", "error");
-            if (prompt("Senha:") !== SENHA_OPERADOR) return showToast("❌ Senha incorreta!", "error");
+            // Senha removida:
+            // if (prompt("Senha:") !== SENHA_OPERADOR) return showToast("❌ Senha incorreta!", "error");
             const nomeTace = prompt(`Quem está retirando ${nomeItem}?`);
             if (!nomeTace) return;
             const qtd = Number(prompt(`Quantidade:`, "1"));
@@ -206,13 +205,21 @@
             if(!select.value) return showToast("❌ Selecione um material", "error");
             const [id, saldoAtual, nomeItem] = select.value.split('|');
             const qtd = Number(document.getElementById('qtd-entrada').value);
+            const obs = document.getElementById('obs-entrada').value.trim().toUpperCase() || 'REPOSICAO';
+            
             if(!qtd || qtd <= 0) return showToast("❌ Digite a quantidade", "error");
-            if (prompt("Senha:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
+            
+            // Senha removida:
+            // if (prompt("Senha:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
+            
             const novoSaldo = Number(saldoAtual) + qtd;
             const { error } = await _supabase.from('estoque').update({ saldo_atual: novoSaldo }).eq('id', id);
             if (!error) {
-                await _supabase.from('historico').insert([{ data: new Date().toISOString(), tace: 'REPOSICAO', item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'ENTRADA' }]);
-                showToast(`✅ Estoque atualizado!`); document.getElementById('qtd-entrada').value = ''; mudarAba('estoque');
+                await _supabase.from('historico').insert([{ data: new Date().toISOString(), tace: obs, item: nomeItem, quantidade: qtd, saldo_final: novoSaldo, tipo: 'ENTRADA' }]);
+                showToast(`✅ Estoque atualizado!`); 
+                document.getElementById('qtd-entrada').value = ''; 
+                document.getElementById('obs-entrada').value = ''; 
+                mudarAba('estoque');
             }
         }
 
@@ -220,7 +227,10 @@
             const nome = document.getElementById('novo-item-nome').value.trim().toUpperCase();
             const qtd = Number(document.getElementById('novo-item-qtd').value);
             if (!nome || qtd < 0) return showToast("❌ Preencha os campos!", "error");
-            if (prompt("Senha de Admin:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
+            
+            // Senha removida:
+            // if (prompt("Senha de Admin:") !== SENHA_OPERADOR) return showToast("❌ Não autorizado!", "error");
+            
             const { error } = await _supabase.from('estoque').insert([{ item: nome, saldo_atual: qtd }]);
             if (error) showToast("❌ Erro ao cadastrar", "error");
             else { showToast(`✅ ${nome} cadastrado!`); document.getElementById('novo-item-nome').value = ''; document.getElementById('novo-item-qtd').value = ''; carregarEstoque(); mudarAba('estoque'); }
@@ -235,9 +245,9 @@
             const { data, error } = await _supabase.from('historico').select('*').order('data', { ascending: false }).limit(50);
             if (error) return;
             tabela.innerHTML = data.map(h => {
-                const isEntrada = h.tace === 'REPOSICAO' || h.tipo === 'ENTRADA';
+                const isEntrada = h.tipo === 'ENTRADA';
                 const cor = isEntrada ? 'text-emerald-500' : 'text-red-500';
-                return `<tr class="dark:text-slate-300"><td class="p-6 text-[0.65rem] font-bold text-slate-400">${new Date(h.data).toLocaleString('pt-BR')}</td><td class="p-6"><p class="text-xs font-black uppercase text-slate-800 dark:text-slate-100">${h.item}</p><p class="text-[0.6rem] font-bold ${cor} uppercase">${isEntrada ? '+' : '-'} ${h.quantidade} UNID | PARA: ${h.tace}</p></td><td class="p-6 text-center font-black text-blue-500 text-sm">${h.saldo_final}</td></tr>`;
+                return `<tr class="dark:text-slate-300"><td class="p-6 text-[0.65rem] font-bold text-slate-400">${new Date(h.data).toLocaleString('pt-BR')}</td><td class="p-6"><p class="text-xs font-black uppercase text-slate-800 dark:text-slate-100">${h.item}</p><p class="text-[0.6rem] font-bold ${cor} uppercase">${isEntrada ? '+' : '-'} ${h.quantidade} UNID | DETALHE: ${h.tace}</p></td><td class="p-6 text-center font-black text-blue-500 text-sm">${h.saldo_final}</td></tr>`;
             }).join('');
         }
 
